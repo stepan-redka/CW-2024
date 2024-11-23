@@ -1,0 +1,111 @@
+<div class="mb-3">
+  <div class="mb-1" *ngIf="!this.candidate.editing">
+    <div class="row">
+      <div class="col-xs-12 col-lg-7 pr-0">
+        <span *ngIf="candidate.title" [innerHtml]="candidate.title | markdown" class="mr-2"></span>
+        <span *ngIf="!candidate.title" class="mr-2">Untitled candidate</span>
+
+        <ul class="list-inline pointer edits">
+          <li class="list-inline-item" role="button" (click)="toggleEditing()" *ngIf="candidate.editable && !expired">edit</li>
+          <li class="list-inline-item" role="button" (click)="deleteCandidate()" *ngIf="candidate.editable && !expired">
+            <span>delete</span>
+          </li>
+          <li class="list-inline-item" role="button" (click)="toggleDetails()">{{detailsExpander()}}</li>
+          <li class="list-inline-item" *ngIf="voteExists() && !expired" role="button" (click)="deleteVote()">clear vote</li>
+        </ul>
+      </div>
+      <div class="col-xs-12 col-lg-5 pl-0 edits text-right">
+        <span *ngIf="voteExists() && questionType == 1">Your Vote: {{vote / 10}} | </span>
+        <span *ngIf="voteExists() && questionType >= 2">Your Vote: {{vote / 10}} | </span>
+        <span *ngIf="candidate?.meetsThreshold && (questionType == 1 || questionType == 3)" role="button">Score:
+          <span tooltip="{{voteAvg(4)}}">{{voteAvg(1)}}</span> | </span>
+        <span *ngIf="candidate.avg_score && questionType == 2">Score: {{candidate.avg_score.toFixed(1)}} | </span>
+        <span *ngIf="!candidate.meetsThreshold">Score: Too Few Votes | </span>
+        <span>{{voteCount()}} Votes</span>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="!this.candidate.editing">
+    <div *ngIf="questionType == 1" class="progress">
+      <div *ngIf="candidate.meetsThreshold" class="progress-bar" role="progressbar" [style.background-color]="backgroundColor"
+        [style.width.%]="candidate.avg_score">
+      </div>
+      <div *ngIf="!candidate.meetsThreshold" class="progress-bar" role="progressbar"></div>
+      <input class="vote_input" [class.invisible]="expired || candidate.readOnly" [(ngModel)]="vote" (value)="createOrUpdateVote($event.target.value)"
+        (mouseup)="createOrUpdateVote($event.target.value)" (touchend)="createOrUpdateVote($event.target.value)" type="range"
+        min="0" max="100" step="5" value="100" />
+    </div>
+    <div *ngIf="questionType == 3">
+      <div class="form-group row">
+        <div class="btn-group col-md-12">
+          <button class="btn btn-outline-primary" [class.active]="vote==100" (click)="createOrUpdateVote(100)" [disabled]="expired || candidate.readOnly">
+            <i class="fa fa-fw fa-thumbs-up"></i>
+          </button>
+          <button hidden class="btn btn-outline-primary" [class.active]="vote==50" (click)="createOrUpdateVote(50)" [disabled]="expired || candidate.readOnly">Abstain
+          </button>
+          <button class="btn btn-outline-primary" [class.active]="vote==0" (click)="createOrUpdateVote(0)" [disabled]="expired || candidate.readOnly">
+            <i class="fa fa-fw fa-thumbs-down"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="questionType == 2">
+      <div class="form-group row">
+        <div class="btn-group d-none d-md-inline-flex col-md-9">
+          <button class="btn btn-outline-primary" [class.active]="vote==0" (click)="createOrUpdateVote(0)" [disabled]="expired || candidate.readOnly">0</button>
+          <button class="btn btn-outline-primary" [class.active]="vote==1" (click)="createOrUpdateVote(1)" [disabled]="expired || candidate.readOnly">1</button>
+          <button class="btn btn-outline-primary" [class.active]="vote==3" (click)="createOrUpdateVote(3)" [disabled]="expired || candidate.readOnly">3</button>
+          <button class="btn btn-outline-primary" [class.active]="vote==5" (click)="createOrUpdateVote(5)" [disabled]="expired || candidate.readOnly">5</button>
+          <button class="btn btn-outline-primary" [class.active]="vote==8" (click)="createOrUpdateVote(8)" [disabled]="expired || candidate.readOnly">8</button>
+          <button class="btn btn-outline-primary" [class.active]="vote==13" (click)="createOrUpdateVote(13)" [disabled]="expired || candidate.readOnly">13</button>
+          <button class="btn btn-outline-primary" [class.active]="vote==20" (click)="createOrUpdateVote(20)" [disabled]="expired || candidate.readOnly">20</button>
+          <button class="btn btn-outline-primary" [class.active]="vote==40" (click)="createOrUpdateVote(40)" [disabled]="expired || candidate.readOnly">40</button>
+          <button class="btn btn-outline-primary" [class.active]="vote==100" (click)="createOrUpdateVote(100)" [disabled]="expired || candidate.readOnly">100</button>
+        </div>
+        <div class="btn-group-vertical d-xs-inline-flex d-md-none col-md-9">
+          <button class="btn btn-outline-primary" [class.active]="vote==0" (click)="createOrUpdateVote(0)" [disabled]="expired || candidate.readOnly">0</button>
+          <button class="btn btn-outline-primary" [class.active]="vote==1" (click)="createOrUpdateVote(1)" [disabled]="expired || candidate.readOnly">1</button>
+          <button class="btn btn-outline-primary" [class.active]="vote==3" (click)="createOrUpdateVote(3)" [disabled]="expired || candidate.readOnly">3</button>
+          <button class="btn btn-outline-primary" [class.active]="vote==5" (click)="createOrUpdateVote(5)" [disabled]="expired || candidate.readOnly">5</button>
+          <button class="btn btn-outline-primary" [class.active]="vote==8" (click)="createOrUpdateVote(8)" [disabled]="expired || candidate.readOnly">8</button>
+          <button class="btn btn-outline-primary" [class.active]="vote==13" (click)="createOrUpdateVote(13)" [disabled]="expired || candidate.readOnly">13</button>
+          <button class="btn btn-outline-primary" [class.active]="vote==20" (click)="createOrUpdateVote(20)" [disabled]="expired || candidate.readOnly">20</button>
+          <button class="btn btn-outline-primary" [class.active]="vote==40" (click)="createOrUpdateVote(40)" [disabled]="expired || candidate.readOnly">40</button>
+          <button class="btn btn-outline-primary" [class.active]="vote==100" (click)="createOrUpdateVote(100)" [disabled]="expired || candidate.readOnly">100</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <form *ngIf="this.candidate.editing" (ngSubmit)="updateCandidate()" class="needs-validation" novalidate #candidateForm="ngForm">
+    <div class="form-group">
+      <div class="input-group">
+        <input id="candidate_title" required type="text" class="form-control" autofocus [(ngModel)]="candidate.title" name="candidate_title" maxlength="255" placeholder="Enter your option name..." #candidate_title="ngModel">
+        <span class="input-group-append">
+          <button class="btn btn-primary" type="submit" role="button" [disabled]="!candidateForm.form.valid">Save</button>
+        </span>
+      </div>
+    </div>
+  </form>
+  <div *ngIf="showDetails">
+    <div class="mb-1">Creator: {{candidate.user.name}}</div>
+    <div class="mb-1">Creation date: {{candidate.created | moment}}</div>
+    <table *ngIf="candidate.votes?.length" class="table table-hover table-bordered table-responsive">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Vote</th>
+        </tr>
+      </thead>
+      <tr *ngFor="let vote of candidate.votes">
+        <td>
+          <b>{{vote.user.name}}</b>
+        </td>
+        <td>
+          <span *ngIf="!anonymous || vote.editable">{{vote.vote / 10}}</span>
+          <span *ngIf="anonymous && !vote.editable">???</span>
+          <i *ngIf="vote.editable" tooltip="Clear vote" (click)="deleteOtherVote(vote)" role="button" class="fa fa-fw fa-times"></i>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>

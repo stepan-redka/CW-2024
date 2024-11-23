@@ -1,0 +1,38 @@
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">Chat</h5>
+    <div *ngIf="poll.comments?.length" class="table-container" #scrollMe>
+      <hr>
+      <table class="table-hover table table-sm">
+        <tr *ngFor="let comment of poll.comments">
+          <td class="nowrap text-muted"><small>{{comment.created | moment}}</small></td>
+          <td class="break"><b class="mr-1">{{comment.user.name}}</b>
+            <span [innerHtml]="comment.comment | markdown"></span>
+            <span role="button" (click)="deleteComment(comment)" *ngIf="comment.editable" tooltip="Delete comment"><i class="fa fa-fw fa-trash"></i></span>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div class="card-body">
+    <form>
+      <div class="row">
+        <div class="col-lg-12 input-group">
+          <input type="text" [disabled]="poll.readOnly" class="form-control" [(ngModel)]="comment" placeholder="Enter a comment here..." name="comment">
+          <span class="input-group-append">
+            <button class="btn btn-outline-secondary" type="submit" (click)="createComment()"><i class="fa fa-fw fa-arrow-circle-right"></i></button>
+          </span>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="card-body">
+    <h5 class="card-title">Users</h5>
+    <hr>
+    <div *ngFor="let user of poll.users">
+      <i class="fa fa-fw fa-circle" [class.text-success]="user.active" tooltip="{{user.name}} is {{getActiveString(user)}}" role="button" [class.text-muted]="!user.active"></i>
+      <i class="fa fa-fw fa-trash" role="button" (click)="deleteVotes(user)" *ngIf="poll.user_id == userService.getUser().id" tooltip="Delete all {{user.name}}'s votes" role="button"></i>
+      {{user.name}}
+    </div>
+  </div>
+</div>

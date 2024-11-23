@@ -1,0 +1,42 @@
+<nav class="navbar navbar-light bg-light navbar-expand-md">
+  <button (click)="toggleCollapseNavbar()" class="navbar-toggler navbar-toggler-right" type="button">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <a class="navbar-brand" [routerLink]="['/']"><i class="fa fa-fw fa-pencil-square-o"></i>&nbsp;SimpleVote</a>
+  <div [class.collapse]="collapseNavbar" class="collapse navbar-collapse">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link active" [routerLink]="['/']">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://github.com/dessalines/simple-vote" target="_blank" placement="bottom" [tooltip]="version">About</a>
+      </li>
+      <li class="nav-item">
+        <button role="button" class="btn btn-outline-primary mx-2"
+           (click)="createPoll()">Create a poll</button>
+      </li>
+      <li class="nav-item">
+        <a role="button" class="nav-link link-unstyled" placement="bottom" tooltip="Donate to the developer" href="https://paypal.me/THoulihan" target="_blank"><small>donate</small></a>
+      </li>
+    </ul>
+    <ul *ngIf="userService.getUser()" class="navbar-nav my-lg-0">
+      <li *ngIf="!userService.getUser().fullUser" class="nav-item pointer">
+        <a role="button" class="nav-link" (click)="toggleLoginModal()">Login/Signup</a>
+      </li>
+      <li dropdown class="nav-item pointer" keyboardNav="true">
+        <a class="nav-link" role="button" type="button" dropdownToggle>
+          {{userService.getUser().name}}
+          <i class="ml-2 fa fa-caret-down"></i>
+        </a>
+        <ul *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu">
+          <li role="menuitem">
+            <a (click)="logout()" class="dropdown-item" href="#">
+              <i class="fa fa-fw fa-sign-out"></i>Logout</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</nav>
+<app-new-user-modal></app-new-user-modal>
+<app-login-modal *ngIf="showLoginModal" (hideEvent)="hiddenEvent()"></app-login-modal>
