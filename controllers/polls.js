@@ -1,6 +1,82 @@
 const db = require('../db');
 
-exports.viewPoll = (req, res) => {
+const createPoll = (req, res) => {
+    const { title, options } = req.body;
+    const userId = req.session.userId;
+
+    if (!title || !options || options.length === 0) {
+        return res.render('error', {
+            message: "Title and options are required!",
+            messageType: "alert-danger"
+        });
+    }
+
+    db.query('INSERT INTO polls (title, created_by) VALUES (?, ?)', [title, userId], (error, results) => {
+        if (error) {
+            console.log("Error inserting into polls:", error);
+            return res.render('error', {
+                message: "Database error!",
+                messageType: "alert-danger"
+            });
+        }
+
+        const pollId = results.insertId;
+        const optionValues = options.split(',').map(option => [pollId, option.trim()]);
+
+        // Insert options individually
+        const insertOption = (option, callback) => {
+            db.query('INSERT INTO options (poll_id, option_text) VALUES (?, ?)', option, callback);
+        };
+
+        const insertOptions = (options, callback) => {
+            let completed = 0;
+            options.forEach(option => {
+                insertOption(option, (error) => {
+                    if (error) {
+                        console.log("Error inserting option:", option, error);
+                        return callback(error);
+                    }
+                    completed++;
+                    if (completed === options.length) {
+                        callback(null);
+                    }
+                });
+            });
+        };
+
+        insertOptions(optionValues, (error) => {
+            if (error) {
+                console.log("Error inserting into options:", error);
+                return res.render('error', {
+                    message: "Database error!",
+                    messageType: "alert-danger"
+                });
+            }
+
+            res.redirect(`/polls/${pollId}`);
+        });
+    });
+};
+
+const addComment = (req, res) => {
+    const pollId = req.params.id;
+    const { comment } = req.body;
+    const userId = req.session.userId;
+
+    db.query('INSERT INTO comments (poll_id, user_id, comment) VALUES (?, ?, ?)', [pollId, userId, comment], (error) => {
+        if (error) {
+            console.log(error);
+            return res.render('error', {
+                message: "Database error!",
+                messageType: "alert-danger"
+            });
+        }
+
+        res.redirect(`/polls/${pollId}`);
+    });
+};
+
+const viewPoll = (req, res) => {
     const pollId = req.params.id;
 
     db.query('SELECT * FROM polls WHERE id = ?', [pollId], (error, pollResults) => {
@@ -40,7 +116,7 @@ exports.viewPoll = (req, res) => {
     });
 };
 
-exports.vote = (req, res) => {
+const vote = (req, res) => {
     const pollId = req.params.id;
     const { optionId } = req.body;
     const userId = req.session.userId;
@@ -58,7 +134,7 @@ exports.vote = (req, res) => {
     });
 };
 
-exports.getStatistics = (req, res) => {
+const getStatistics = (req, res) => {
     const pollId = req.params.id;
 
     db.query('SELECT options.option_text, COUNT(votes.id) AS vote_count FROM options LEFT JOIN votes ON options.id = votes.option_id WHERE options.poll_id = ? GROUP BY options.id', [pollId], (error, results) => {
@@ -71,7 +147,7 @@ exports.getStatistics = (req, res) => {
     });
 };
 
-exports.listPolls = (req, res) => {
+const listPolls = (req, res) => {
     const userName = req.session.userName;
 
     db.query('SELECT * FROM polls', (error, results) => {
@@ -101,27 +177,23 @@ exports.listPolls = (req, res) => {
     });
 };
 
-exports.renderCreatePoll = (req, res) => {
+const renderCreatePoll = (req, res) => {
     res.render('createPoll');
 };
 
-exports.createPoll = (req, res) => {
-    const { title, options } = req.body;
-    const userId = req.session.userId;
+const viewResults = (req, res) => {
+    const pollId = req.params.id;
 
-    db.query('INSERT INTO polls (title, user_id) VALUES (?, ?)', [title, userId], (error, results) => {
-        if (error) {
+    db.query('SELECT * FROM polls WHERE id = ?', [pollId], (error, pollResults) => {
+        if (error || pollResults.length === 0) {
             console.log(error);
             return res.render('error', {
-                message: "Database error!",
+                message: "Poll not found!",
                 messageType: "alert-danger"
             });
         }
 
-        const pollId = results.insertId;
-        const optionValues = options.map(option => [pollId, option]);
-
-        db.query('INSERT INTO options (poll_id, option_text) VALUES ?', [optionValues], (error) => {
+        db.query('SELECT options.option_text, COUNT(votes.id) AS vote_count FROM options LEFT JOIN votes ON options.id = votes.option_id WHERE options.poll_id = ? GROUP BY options.id', [pollId], (error, results) => {
             if (error) {
                 console.log(error);
                 return res.render('error', {
@@ -130,44 +202,21 @@ exports.createPoll = (req, res) => {
                 });
             }
 
-            res.redirect(`/polls/${pollId}`);
+            res.render('pollResults', {
+                poll: pollResults[0],
+                results: results
+            });
         });
     });
 };
 
-exports.addComment = (req, res) => {
-    const pollId = req.params.id;
-    const { comment } = req.body;
-    const userId = req.session.userId;
-
-    db.query('INSERT INTO comments (poll_id, user_id, comment) VALUES (?, ?, ?)', [pollId, userId, comment], (error) => {
-        if (error) {
-            console.log(error);
-            return res.render('error', {
-                message: "Database error!",
-                messageType: "alert-danger"
-            });
-        }
-
-        res.redirect(`/polls/${pollId}`);
-    });
-};
-
-exports.viewResults = (req, res) => {
-    const pollId = req.params.id;
-
-    db.query('SELECT options.option_text, COUNT(votes.id) AS vote_count FROM options LEFT JOIN votes ON options.id = votes.option_id WHERE options.poll_id = ? GROUP BY options.id', [pollId], (error, results) => {
-        if (error) {
-            console.log(error);
-            return res.render('error', {
-                message: "Database error!",
-                messageType: "alert-danger"
-            });
-        }
-
-        res.render('viewResults', {
-            pollId: pollId,
-            results: results
-        });
-    });
+module.exports = {
+    createPoll,
+    viewPoll,
+    vote,
+    addComment,
+    viewResults,
+    getStatistics,
+    listPolls,
+    renderCreatePoll
 };
