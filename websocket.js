@@ -2,8 +2,11 @@ const WebSocket = require('ws');
 
 const wss = new WebSocket.Server({ port: 8080 });
 
-wss.on('connection', (ws) => {
-    console.log('New client connected');
+let onlineUsers = new Set();
+
+wss.on('connection', (ws, req) => {
+    const userName = req.headers['sec-websocket-protocol']; // Assuming the username is passed in the WebSocket protocol header
+    onlineUsers.add(userName);
 
     ws.on('message', (message) => {
         const data = JSON.parse(message);
@@ -21,8 +24,24 @@ wss.on('connection', (ws) => {
     });
 
     ws.on('close', () => {
+        onlineUsers.delete(userName);
         console.log('Client disconnected');
+        broadcastOnlineUsers();
     });
+
+    broadcastOnlineUsers();
 });
+
+function broadcastOnlineUsers() {
+    const onlineUsersArray = Array.from(onlineUsers);
+    wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify({
+                type: 'onlineUsers',
+                users: onlineUsersArray
+            }));
+        }
+    });
+}
 
 module.exports = wss;

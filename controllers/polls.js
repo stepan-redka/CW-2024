@@ -130,7 +130,7 @@ const vote = (req, res) => {
             });
         }
 
-        res.redirect(`/polls/${pollId}`);
+        res.redirect('/polls');
     });
 };
 
