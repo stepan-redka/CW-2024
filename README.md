@@ -2,19 +2,20 @@
 
 Course project built with Java and TypeScript
 
-A full-stack web application that combines a Java backend with a TypeScript-based frontend, styled using SCSS and Handlebars templates. The project demonstrates server-side logic, dynamic page rendering, and client-side interactivity.
+A full-stack voting web application that combines a Java backend with a TypeScript-based frontend, styled using SCSS and Handlebars templates. The project allows users to cast votes through a simple web interface and see updated results in real time.
 
 ## Features
 
-- Handlebars templates for dynamic HTML rendering.
+- Voting functionality with server-side request handling.
+- Handlebars templates for dynamic result rendering.
 - TypeScript and SCSS for modular, maintainable frontend code.
-- Example pages for demonstrating interaction between client and server.
+- Example pages demonstrating interaction between client and server.
 
 ## Tech Stack
 
-- **Backend:** Java
-- **Frontend:** TypeScript, Handlebars, SCSS
-- **Build/Tools:** Gradle
+- **Backend:** Java  
+- **Frontend:** TypeScript, Handlebars, SCSS  
+- **Build/Tools:** Gradle  
 
 ## How to Run
 
