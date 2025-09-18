@@ -6,7 +6,7 @@
 <img width="600" height="380" alt="image" src="https://github.com/user-attachments/assets/ae4b2855-ca71-4525-bb09-2bc702c05842" />
 
 
-A full-stack voting web application that combines a Java backend with a TypeScript-based frontend, styled using SCSS and Handlebars templates. The project allows users to cast votes through a simple web interface and see updated results in real time.
+A full-stack voting web application. The project allows users to cast votes through a simple web interface and see updated results in real time.
 
 ## Features
 
@@ -17,8 +17,8 @@ A full-stack voting web application that combines a Java backend with a TypeScri
 
 ## Tech Stack
 
-- **Backend:** Java  
-- **Frontend:** TypeScript, Handlebars, SCSS  
+- **Backend:** Java, TypeScript
+- **Frontend:** Handlebars, SCSS  
 - **Build/Tools:** Gradle  
 
 ## How to Run
