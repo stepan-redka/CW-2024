@@ -3,8 +3,7 @@
 <img width="600" height="380" alt="image" src="https://github.com/user-attachments/assets/e16a7b27-1d92-4edb-a6b6-571da927863d" />
 <img width="600" height="380" alt="image" src="https://github.com/user-attachments/assets/e15bd820-f80d-4ae5-8c93-f686dcf9d9e2" />
 <img width="600" height="380" alt="image" src="https://github.com/user-attachments/assets/36d02648-ff0b-4352-955d-ee8843db1e94" />
-
-<img width="900" height="680" alt="image" src="https://github.com/user-attachments/assets/ae4b2855-ca71-4525-bb09-2bc702c05842" />
+<img width="600" height="380" alt="image" src="https://github.com/user-attachments/assets/ae4b2855-ca71-4525-bb09-2bc702c05842" />
 
 
 A full-stack voting web application that combines a Java backend with a TypeScript-based frontend, styled using SCSS and Handlebars templates. The project allows users to cast votes through a simple web interface and see updated results in real time.
