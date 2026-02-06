@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:20-alpine
 
 WORKDIR /app
 
@@ -6,16 +6,19 @@ WORKDIR /app
 RUN npm install -g @angular/cli@latest
 
 # Copy package files
-COPY package*.json ./
+COPY package*.json yarn.lock* ./
 
 # Install dependencies
-RUN npm ci
+RUN npm install
 
 # Copy source code
 COPY . .
 
 # Expose port
 EXPOSE 4200
+
+# Set OpenSSL legacy provider for older Angular builds
+ENV NODE_OPTIONS=--openssl-legacy-provider
 
 # Start development server
 CMD ["ng", "serve", "--host", "0.0.0.0", "--port", "4200"]

@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
-const db = require('../db'); // Import the db module
+const db = require('../config/database'); // Import the db module
 
 exports.register = (req, res) => {
     const { name, email, password, passwordConfirm } = req.body;

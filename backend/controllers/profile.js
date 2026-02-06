@@ -1,6 +1,6 @@
 const multer = require('multer');
 const path = require('path');
-const db = require('../db'); // Assuming you have a db.js file for database connection
+const db = require('../config/database'); // Assuming you have a db.js file for database connection
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {

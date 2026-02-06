@@ -1,4 +1,4 @@
-const db = require('../db');
+const db = require('../config/database');
 
 exports.renderChat = (req, res) => {
     const userId = req.session.userId;

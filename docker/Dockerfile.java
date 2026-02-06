@@ -1,27 +1,22 @@
-FROM openjdk:11-jre-slim
+FROM eclipse-temurin:11-jdk-alpine
 
 WORKDIR /app
 
 # Install Maven
-RUN apt-get update && \
-    apt-get install -y maven && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache maven
 
 # Copy Maven files
 COPY pom.xml ./
 
 # Download dependencies
-RUN mvn dependency:go-offline
+RUN mvn dependency:go-offline || true
 
 # Copy source code
 COPY src ./src
 
-# Build the application
-RUN mvn clean package -DskipTests
-
-# Expose port
-EXPOSE 8080
+# Build the application (skip liquibase which needs DB at build time)
+RUN mvn clean package -DskipTests -Dliquibase.should.run=false
 
 # Run the application
-CMD ["java", "-jar", "target/*.jar"]
+EXPOSE 8080
+CMD ["java", "-jar", "target/simplevote.jar"]
