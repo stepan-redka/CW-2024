@@ -5,16 +5,20 @@ services:
   database:
     image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD}
-      MYSQL_DATABASE: ${DATABASE}
-      MYSQL_USER: ${DATABASE_USER}
-      MYSQL_PASSWORD: ${DATABASE_PASSWORD}
+      MYSQL_ROOT_PASSWORD: your_password
+      MYSQL_DATABASE: kursova3
+      MYSQL_USER: root
+      MYSQL_PASSWORD: your_password
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
       - polling_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
 
   # Node.js Backend API
   backend:
@@ -26,8 +30,13 @@ services:
     environment:
       - NODE_ENV=development
       - DATABASE_HOST=database
+      - DATABASE=kursova3
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=your_password
+      - PORT=3000
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     volumes:
       - ../backend:/app
       - /app/node_modules
@@ -55,7 +64,8 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     networks:
       - polling_network
 
