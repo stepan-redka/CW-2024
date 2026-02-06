@@ -1,29 +1,37 @@
 {
-  "name": "user-auth",
+  "name": "polling-system",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A comprehensive polling system with Angular frontend, Node.js backend, and Java microservices",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js"
+    "install:all": "npm install && npm install --prefix backend && npm install --prefix frontend",
+    "start:backend": "cd backend && npm run dev",
+    "start:frontend": "cd frontend && npm start",
+    "start:java": "cd java-service && ./run.sh",
+    "build:frontend": "cd frontend && npm run build",
+    "build:java": "cd java-service && mvn clean package",
+    "dev": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "clean": "rm -rf backend/node_modules frontend/node_modules java-service/target",
+    "docker:build": "docker-compose -f docker/docker-compose.yml build",
+    "docker:up": "docker-compose -f docker/docker-compose.yml up -d",
+    "docker:down": "docker-compose -f docker/docker-compose.yml down"
   },
-  "keywords": [],
+  "keywords": [
+    "polling",
+    "voting",
+    "angular",
+    "nodejs",
+    "express",
+    "java",
+    "websocket"
+  ],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "chart.js": "^4.4.6",
-    "cookie-parser": "^1.4.7",
-    "dotenv": "^16.4.5",
-    "express": "^4.21.1",
-    "express-session": "^1.18.1",
-    "hbs": "^4.2.0",
-    "jsonwebtoken": "^9.0.2",
-    "multer": "^1.4.5-lts.1",
-    "mysql": "^2.18.1",
-    "mysql2": "^3.11.4",
-    "nodemon": "^3.1.7",
-    "socket.io": "^4.8.1",
-    "ws": "^8.18.0"
+  "devDependencies": {
+    "concurrently": "^8.2.2"
   }
 }
