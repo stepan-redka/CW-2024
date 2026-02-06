@@ -5,42 +5,63 @@
 <img width="600" height="380" alt="image" src="https://github.com/user-attachments/assets/36d02648-ff0b-4352-955d-ee8843db1e94" />
 <img width="600" height="380" alt="image" src="https://github.com/user-attachments/assets/ae4b2855-ca71-4525-bb09-2bc702c05842" />
 
-A full-stack voting application featuring real-time updates and a microservices-based architecture.
+Full-stack voting web application with real-time updates via WebSockets.
 
----
+## Stack
 
-### Project Structure
+- Node.js / Express (backend API)
+- Angular (frontend SPA)
+- MySQL
+- Java / Maven (microservice)
+- Docker
 
-* **backend/**: Node.js/Express API server with WebSocket integration.
-* **frontend/**: Angular single-page application.
-* **java-service/**: Complementary Java Spring Boot microservice.
-* **docker/**: Containerization and environment configurations.
+## Project structure
 
----
+```
+backend/           Node.js API, views, static assets
+  config/          database configuration
+  controllers/     business logic
+  middleware/      auth, role, status checks
+  routes/          route definitions
+  services/        websocket service
+  views/           handlebars templates
+  public/          static files
+frontend/          Angular application
+java-service/      Java microservice
+docker/            Dockerfiles, compose, DB init script
+```
 
-### Core Features
+## Quick start (Docker)
 
-* **Real-time Voting**: Live poll updates via WebSockets.
-* **User Accounts**: Secure registration, login, and profile management.
-* **Poll Control**: Create and manage voting sessions with role-based permissions.
-* **Engagement**: Real-time live chat functionality.
-* **Responsive Design**: Modern UI built with Angular and SCSS.
-
----
-
-### Technical Stack
-
-* **Languages**: TypeScript, JavaScript, Java, SQL.
-* **Backend**: Node.js, Express, Spring Boot.
-* **Frontend**: Angular.
-* **Database**: MySQL.
-* **Infrastructure**: Docker, Maven, WebSockets.
-
----
-
-### Installation and Setup
-
-**1. Clone the repository**
 ```bash
-git clone [https://github.com/stepan-redka/CW-2024.git](https://github.com/stepan-redka/CW-2024.git)
-cd CW-202
+git clone https://github.com/stepan-redka/CW-2024.git
+cd CW-2024
+cp .env.example .env        # edit with your credentials
+cd docker
+docker-compose up --build -d
+```
+
+App will be available at `http://localhost:3000`.
+
+## Manual setup
+
+Prerequisites: Node.js, MySQL, Java 11+, Maven.
+
+```bash
+cp .env.example .env        # edit with your credentials
+cd backend
+npm install
+npm start
+```
+
+## Environment variables
+
+See `.env.example`:
+
+```
+DATABASE=your_database_name
+DATABASE_HOST=localhost
+DATABASE_USER=your_username
+DATABASE_PASSWORD=your_password
+PORT=3000
+```
