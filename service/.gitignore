@@ -1,8 +1,0 @@
-log.out
-target/
-.idea/
-.classpath
-.project
-.settings/
-simplevote.iml
-src/main/resources/dist/
